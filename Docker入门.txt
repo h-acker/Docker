@@ -1,0 +1,19 @@
+﻿ 1、Docker使用场景
+Docker 相比于传统虚拟机的技术来说先进了不少，具体表现在 Docker 不是在宿主机上虚拟出一套硬件后再虚拟出一个操作系统，而是让 Docker 容器里面的进程直接运行在宿主机上（Docker 会做文件、网络等的隔离），这样一来 Docker 会 “体积更轻、跑的更快、同宿主机下可创建的个数更多”。
+（1）、简化配置
+虚拟机的最大好处就是可以同一个硬件设施上运行各种配置不一样的平台（软件、系统），Docker在降低额外的开销后还提供了同样的功能。你可以将运行环境和配置放在代码中，然后部署，同一个Docker的配置可以在不同的环境中使用。
+（2）、代码流水线（Code Pipeline）管理
+代码从开发者的机器到最终生产环境上的部署，需要经过很多的中间环境，每个中间环节可能都不相同，Docker应用提供了一个从开发到部署都一致的环境。
+（3）、提高开发效率
+
+（4）、隔离应用
+多种原因，一台机器可能会配置运行不同的应用、环境。而Docker可以隔离不同场合下需要的应用和环境。
+（5）、整合服务器
+（6）、调适能力
+（7）、多租户环境
+（8）、快速部署
+Before VMs, bringing up a new hardware resource took days. Virtualization brought this number down to minutes. Docker, by creating just a container for the process and not booting up an OS, brings it down to seconds.
+2、Docker核心
+（1）、镜像
+（2）、容器
+（3）、仓库
