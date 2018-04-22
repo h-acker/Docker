@@ -1,0 +1,63 @@
+﻿1、Docker安装
+yum install -y docker(Docker对Centos版本有具体要求，大家可以百度)
+2、git安装
+yum install -y git
+3、pull  远程实验仓库()
+cd /tmp
+mkdir docker
+cd docker
+git clone https://gitee.com/dockerf/docker-training.git
+克隆之后，进入docker-training目录下，会看到 Centos7、mysql、php-fpm、wordpress：
+
+本次学习 Centos7、mysql、php-fpm、wordpress镜像构造
+4、Centos7镜像构造：
+查看Dockerfile(通过写Dockerfile自动配置镜像)、以下是对Dockerfile文件讲解
+#
+# MAINTAINER        Carson,C.J.Zeong <zcy@nicescale.com>
+# DOCKER-VERSION    1.6.2
+#
+# Dockerizing CentOS7: Dockerfile for building CentOS images
+#
+FROM       centos:centos7.1.1503   #拉取镜像的父镜像（镜像在此基础上创建）
+MAINTAINER Carson,C.J.Zeong <zcy@nicescale.com>  #镜像维护者、邮箱
+
+ENV TZ "Asia/Shanghai"  #ENV设置环境变量 为镜像添加时区环境变量
+ENV TERM xterm   
+
+ADD aliyun-mirror.repo /etc/yum.repos.d/CentOS-Base.repo   #复制文件到镜像中
+ADD aliyun-epel.repo /etc/yum.repos.d/epel.repo 
+
+#运行命令、在镜像里面安装各种软件
+RUN yum install -y curl wget tar bzip2 unzip vim-enhanced passwd sudo yum-utils hostname net-tools rsync man && \
+    yum install -y gcc gcc-c++ git make automake cmake patch logrotate python-devel libpng-devel libjpeg-devel && \
+    yum install -y --enablerepo=epel pwgen python-pip && \
+    yum clean all
+
+#安装进程管理工具
+RUN pip install supervisor
+ADD supervisord.conf /etc/supervisord.conf
+
+RUN mkdir -p /etc/supervisor.conf.d && \
+    mkdir -p /var/log/supervisor
+
+#开放端口，宿主机会自动分配一个端口与此端口映射
+EXPOSE 22
+#每次镜像启动时运行命令、有多个ENTPYPOINT时，默认加载最后一个
+ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c", "/etc/supervisord.conf"]
+ADD 与COPY 都可以复制文件到镜像中，但是ADD比COPY多了两个功能：
+ADD  链接地址   /etc/yum.repos.d/CentOS-Base.repo
+如果复制的是一个压缩文件，ADD还可以自动解压
+
+看完Centos7.1 Dockerfile 接下来使用docker build命令构建镜像
+在使用docker builtd时需要先启动docker服务
+service docker start   #启动docker服务
+docker 命令:
+docker build  -t  registry_url/namespace/csphere/centos:7.1 .（点）(完整命名：仓库连接、命名空间、版本：版本号, 如果Dockerfile文件在当前路径，则可以使用.（点）代替)
+docker run -it 以交互式模式启动容器
+docker rub -d 后端启动容器
+docker run -p :固定宿主机与容器的端口映射
+docker run -P：宿主机重启后，重新分配端口号给容器
+
+#创建基础镜像
+docker run -d -p 2222:22  --name base csphere/centos:7.1
+使用Docker创建服务器，一般分为3个镜像：基础镜像、中间件镜像、应用镜像。
